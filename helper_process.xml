@@ -1,0 +1,1161 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>helper_process</id>
+	<initials>HEL</initials>
+	<title>Helper process</title>
+	<icon>settings</icon>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<caseName>Helper process</caseName>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+			<view>true</view>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="text">
+		<id>result</id>
+		<title/>
+		<component>
+			<name>area</name>
+		</component>
+	</data>
+	<data type="text">
+		<id>ldap_id</id>
+		<title>LDAP ID</title>
+	</data>
+	<data type="button">
+		<id>find</id>
+		<title/>
+		<placeholder>find</placeholder>
+		<component>
+			<name>raised</name>
+		</component>
+	</data>
+	<data type="userList">
+		<id>userList_0</id>
+		<title/>
+	</data>
+	<data type="text">
+		<id>stringId</id>
+		<title>String id</title>
+	</data>
+	<data type="button">
+		<id>button_0</id>
+		<title/>
+	</data>
+	<data type="button">
+		<id>load_user_list</id>
+		<title>Load</title>
+	</data>
+	<data type="text">
+		<id>userListName</id>
+		<title>UserListName</title>
+	</data>
+	<data type="text">
+		<id>field_id</id>
+		<title>Field Id</title>
+	</data>
+	<data type="button">
+		<id>set_empty_string</id>
+		<title/>
+		<placeholder>Set empty string</placeholder>
+	</data>
+	<data type="text">
+		<id>boolean_value</id>
+		<title>Boolean value</title>
+	</data>
+	<data type="button">
+		<id>set_true</id>
+		<title/>
+		<placeholder>Set true</placeholder>
+	</data>
+	<data type="button">
+		<id>set_false</id>
+		<title/>
+		<placeholder>Set false</placeholder>
+	</data>
+	<data type="button">
+		<id>set_array_value</id>
+		<title/>
+		<placeholder>set empty array</placeholder>
+	</data>
+	<data type="text">
+		<id>text_value</id>
+		<title>Text value</title>
+	</data>
+	<data type="button">
+		<id>set_text_value</id>
+		<title>set</title>
+	</data>
+	<data type="button">
+		<id>find_process_role</id>
+		<title>Find process role</title>
+	</data>
+	<data type="text">
+		<id>petriNetId</id>
+		<title>PetriNetID</title>
+	</data>
+	<data type="text">
+		<id>oldRoleId</id>
+		<title>Old Role Id</title>
+	</data>
+	<data type="text">
+		<id>newRoleId</id>
+		<title>newRoleId </title>
+	</data>
+	<data type="button">
+		<id>replace_role_reference</id>
+		<title/>
+		<placeholder>replace_role_reference</placeholder>
+	</data>
+	<data type="button">
+		<id>load_petriNet</id>
+		<title/>
+		<placeholder>load petrinet</placeholder>
+	</data>
+	<data type="text">
+		<id>user_stringId</id>
+		<title>User String Id</title>
+	</data>
+	<data type="user">
+		<id>user_field</id>
+		<title>User Field</title>
+	</data>
+	<data type="button">
+		<id>copy_user_value_to_field</id>
+		<title/>
+		<placeholder>copy user value to field</placeholder>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>460</x>
+		<y>180</y>
+		<label>ldap find user by id </label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>2</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>textarea</name>
+				</component>
+			</dataRef>
+			<dataRef>
+				<id>ldap_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>find</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>find_set</id>
+					<actions phase="pre">
+						<action id="1">ldap_id: f.ldap_id,
+result: f.result;
+
+change result value {
+    ldapUserService.findById(ldap_id.value.toString(),false).getFullName()
+}</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t2</id>
+		<x>460</x>
+		<y>300</y>
+		<label>load user list field value</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t2_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>userList_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>load_user_list</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>1</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>load_user_list_set</id>
+					<actions phase="pre">
+						<action id="2">userList_0: f.userList_0,
+userListName: f.userListName,
+stringId: f.stringId;
+
+def caze = workflowService.findOne(stringId.value)
+
+change userList_0 value { caze.getFieldValue(userListName.value) }</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>userListName</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t2_assign</id>
+		</event>
+		<event type="finish">
+			<id>t2_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t2_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t2_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t3</id>
+		<x>460</x>
+		<y>420</y>
+		<label>Set empty string to field</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t3_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>set_empty_string</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>set_empty_string_set</id>
+					<actions phase="pre">
+						<action id="3">stringId: f.stringId,
+fieldId: f.field_id;
+
+def caze = workflowService.findOne(stringId.value)
+caze.dataSet[fieldId.value].value = ""
+workflowService.save(caze)</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t3_assign</id>
+		</event>
+		<event type="finish">
+			<id>t3_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t3_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t3_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t4</id>
+		<x>460</x>
+		<y>540</y>
+		<label>Set boolean value</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t4_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>set_true</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>set_boolean_value_set</id>
+					<actions phase="pre">
+						<action id="4">stringId: f.stringId,
+fieldId: f.field_id;
+
+def caze = workflowService.findOne(stringId.value)
+caze.dataSet[fieldId.value].value = true
+workflowService.save(caze)</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>set_false</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>set_false_set</id>
+					<actions phase="pre">
+						<action id="5">stringId: f.stringId,
+fieldId: f.field_id;
+
+def caze = workflowService.findOne(stringId.value)
+caze.dataSet[fieldId.value].value = false
+workflowService.save(caze)</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t4_assign</id>
+		</event>
+		<event type="finish">
+			<id>t4_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t4_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t4_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t5</id>
+		<x>460</x>
+		<y>660</y>
+		<label>Set empty array to field value</label>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t5_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>set_array_value</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>set_array_value_set</id>
+					<actions phase="pre">
+						<action id="6">stringId: f.stringId,
+fieldId: f.field_id,
+result: f.result;
+
+def caze = workflowService.findOne(stringId.value)
+caze.dataSet[fieldId.value].value = []
+change result value  { caze.dataSet[fieldId.value].value }
+workflowService.save(caze)</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t5_assign</id>
+		</event>
+		<event type="finish">
+			<id>t5_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t5_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t5_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t6</id>
+		<x>460</x>
+		<y>780</y>
+		<label>Set text value</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t6_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>text_value</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>set_text_value</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>set_text_value_set</id>
+					<actions phase="post">
+						<action id="7">stringId: f.stringId,
+fieldId: f.field_id,
+text_value: f.text_value,
+result: f.result;
+
+def caze = workflowService.findOne(stringId.value)
+caze.dataSet[fieldId.value].value = text_value.value
+change result value  { caze.dataSet[fieldId.value].value }
+workflowService.save(caze)</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t6_assign</id>
+		</event>
+		<event type="finish">
+			<id>t6_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t6_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t6_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t7</id>
+		<x>460</x>
+		<y>900</y>
+		<label>Find Process Role</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t7_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>find_process_role</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>find_process_role_set</id>
+					<actions phase="pre">
+						<action id="8">stringId: f.stringId,
+result: f.result;
+
+def processRole = processRoleService.findById(stringId.value)
+def json = groovy.json.JsonOutput.toJson(processRole)
+def prettyJson = groovy.json.JsonOutput.prettyPrint(json)
+change result value { prettyJson }</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t7_assign</id>
+		</event>
+		<event type="finish">
+			<id>t7_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t7_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t7_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t8</id>
+		<x>460</x>
+		<y>1020</y>
+		<label>Replace UserListField Role Reference </label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t8_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>petriNetId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>oldRoleId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>newRoleId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>replace_role_reference</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>replace_role_reference_set</id>
+					<actions phase="pre">
+						<action id="9">petriNetId: f.petriNetId,
+oldRoleId: f.oldRoleId,
+newRoleId: f.newRoleId,
+fieldId: f.field_id,
+result: f.result;
+
+petriNetService.evictAllCaches()
+def logtext = ""
+def petriNet = petriNetService.getNewestVersionByIdentifier(petriNetId.value)
+com.netgrif.application.engine.petrinet.domain.dataset.UserListField field = (petriNet.dataSet[fieldId.value] as com.netgrif.application.engine.petrinet.domain.dataset.UserListField)
+logtext += field.roles.toString()
+field.roles.remove(oldRoleId.value)
+logtext += field.roles.toString()
+field.roles.add(newRoleId.value)
+logtext += field.roles.toString()
+petriNetService.save(petriNet)
+def json = groovy.json.JsonOutput.toJson((petriNet.dataSet[fieldId.value] as com.netgrif.application.engine.petrinet.domain.dataset.UserListField))
+def prettyJson = groovy.json.JsonOutput.prettyPrint(json)
+logtext += "\n" + prettyJson
+petriNetService.evictAllCaches()
+change result value { logtext }</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t8_assign</id>
+		</event>
+		<event type="finish">
+			<id>t8_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t8_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t8_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t9</id>
+		<x>460</x>
+		<y>1140</y>
+		<label>load petriNet Object</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t9_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>load_petriNet</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>raised</name>
+				</component>
+				<event type="set">
+					<id>load_choices_set</id>
+					<actions phase="pre">
+						<action id="10">stringId: f.stringId,
+result: f.result;
+
+def petriNet = petriNetService.get(new org.bson.types.ObjectId(stringId.value))
+def json = groovy.json.JsonOutput.toJson(petriNet)
+def prettyJson = groovy.json.JsonOutput.prettyPrint(json)
+change result value { prettyJson }</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t9_assign</id>
+		</event>
+		<event type="finish">
+			<id>t9_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t9_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t9_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t10</id>
+		<x>460</x>
+		<y>1260</y>
+		<label>Set user field value</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t10_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>stringId</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>user_field</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>copy_user_value_to_field</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<event type="set">
+					<id>copy_user_value_to_field_set</id>
+					<actions phase="pre">
+						<action id="11">stringId: f.stringId,
+user_field: f.user_field,
+field_id: f.field_id,
+result: f.result;
+
+def caze = workflowService.findOne(stringId.value)
+caze.dataSet[field_id.value].value = user_field.value
+change result value  { caze.dataSet[field_id.value].value }
+workflowService.save(caze)</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t10_assign</id>
+		</event>
+		<event type="finish">
+			<id>t10_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t10_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t10_delegate</id>
+		</event>
+	</transition>
+</document>
