@@ -28,7 +28,7 @@
 					def currentNet = petriNetService.getNewestVersionByIdentifier(identifier.value as String)
 					def reimported = importer.importPetriNet(new java.io.File(newNet.value.path)).get()
 
-					migrationHelper.updateNetIgnoreRoles(currentNet, reimported, null)
+					migrationHelper.updateNetIgnoreRoles(currentNet, reimported, new java.io.File(newNet.value.path), null)
 
 					petriNetService.evictAllCaches()
 					def actionCacheService = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("fieldActionsCacheService")
@@ -109,5 +109,17 @@
 				</layout>
 			</dataRef>
 		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
 	</transition>
 </document>

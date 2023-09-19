@@ -1,0 +1,158 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>check_permissions</id>
+	<initials>CHP</initials>
+	<title>check permissions</title>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="button">
+		<id>find</id>
+		<title/>
+		<placeholder>Find</placeholder>
+		<event type="set">
+			<id>set_event_0</id>
+			<actions phase="post">
+				<action id="action_0">result: f.result,
+                    identifier: f.identifier,
+                    trans: f.trans;
+
+                    def net
+                    if (org.bson.types.ObjectId.isValid(identifier.value)) {
+                        net = petriNetService.get(new org.bson.types.ObjectId(identifier.value))
+                    } else {
+                        net = petriNetService.getNewestVersionByIdentifier(identifier.value)
+                    }
+                    if (!net) {
+                        throw new IllegalArgumentException("No such net")
+                    }
+
+                    def t = net.transitions[trans.value]
+
+                    change result value {
+                        "$net.identifier [$net.stringId][$net.version] \n" +
+                                "Roles: ${net.roles.values().collect { it.stringId + " " + it.importId }} \n" +
+                                "Permissions: $net.permissions \n" +
+                                "Transition: $t.roles \n" +
+                                "" as String
+                    }</action>
+			</actions>
+		</event>
+	</data>
+	<data type="text">
+		<id>identifier</id>
+		<title>identifier/stringId</title>
+	</data>
+	<data type="text">
+		<id>trans</id>
+		<title>transition ID</title>
+	</data>
+	<data type="text">
+		<id>result</id>
+		<title>Result</title>
+		<component>
+			<name>area</name>
+		</component>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>540</x>
+		<y>180</y>
+		<label>Fix</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<view>true</view>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>trans</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>find</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>identifier</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<component>
+					<name>area</name>
+				</component>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+</document>

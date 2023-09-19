@@ -1,0 +1,120 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>find_users_duplicates</id>
+	<initials>FUD</initials>
+	<title>find users duplicates</title>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="button">
+		<id>find</id>
+		<title/>
+		<placeholder>Find</placeholder>
+		<event type="set">
+			<id>set_event_0</id>
+			<actions phase="post">
+				<action id="action_0">
+					text_0: f.text_0;
+
+					def users = userService.findAll(true)
+					def resultStr = ""
+					def ldapUsers = users.findAll { it instanceof com.netgrif.application.engine.ldap.domain.LdapUser }
+					resultStr += "Total users = ${users.size()} \n" as String
+					resultStr += "LDAP users = ${ldapUsers.size()} \n" as String
+
+					def dupes = [:]
+					ldapUsers.each { ldapUser ->
+						def dupesForUser = ldapUsers.findAll { it.stringId != ldapUser.stringId &amp;&amp; (it.dn.toLowerCase() == ldapUser.dn.toLowerCase() || it.email == ldapUser.email) }
+						if (dupesForUser) {
+							log.info("Found dupes for $ldapUser.email")
+							def list = ([ldapUser] + dupesForUser).sort { it.stringId }
+							dupes[list[0].stringId] = list
+						}
+					}
+
+					dupes.each { entry ->
+						resultStr += "${entry.value.collect { "$it.stringId $it.email $it.fullName $it.dn" as String }.join(" | ")} \n" as String
+					}
+					change text_0 value { resultStr }
+				</action>
+			</actions>
+		</event>
+	</data>
+	<data type="text">
+		<id>text_0</id>
+		<title>Users with duplicate DNs</title>
+		<component>
+			<name>area</name>
+		</component>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>540</x>
+		<y>180</y>
+		<label>Fix</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<view>true</view>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>text_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>find</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+</document>
