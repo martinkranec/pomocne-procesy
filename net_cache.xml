@@ -1,6 +1,6 @@
 <document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
-    <id>TEST/net_cache</id>
+    <id>net_cache</id>
     <initials>TST</initials>
     <title>NET CACHE</title>
     <icon>device_hub</icon>
