@@ -16,7 +16,7 @@
 		<id>admin</id>
 		<title>Admin</title>
 	</role>
-	<data type="button">y
+	<data type="button">
 		<id>find</id>
 		<title/>
 		<placeholder>Find</placeholder>
