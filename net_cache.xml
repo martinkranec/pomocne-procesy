@@ -1,0 +1,104 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+    <id>TEST/net_cache</id>
+    <initials>TST</initials>
+    <title>NET CACHE</title>
+    <icon>device_hub</icon>
+    <defaultRole>false</defaultRole>
+    <anonymousRole>false</anonymousRole>
+    <transitionRole>false</transitionRole>
+
+    <role>
+        <id>admin</id>
+        <title>Admin</title>
+    </role>
+    <roleRef>
+        <id>admin</id>
+        <caseLogic>
+            <create>true</create>
+            <delete>true</delete>
+        </caseLogic>
+    </roleRef>
+    <data type="file" immediate="true">
+        <id>file_0</id>
+        <title>HTML</title>
+    </data>
+    <data type="file" immediate="true">
+        <id>file_1</id>
+        <title>PDF</title>
+    </data>
+    <data type="button" immediate="true">
+        <id>button_0</id>
+        <title>Button</title>
+        <placeholder>Remove cache</placeholder>
+
+        <action trigger="set">
+            petriNetService.evictAllCaches()
+            def actionCacheService = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("fieldActionsCacheService")
+            actionCacheService.clearActionCache()
+        </action>
+    </data>
+    <data type="text" immediate="true">
+        <id>text_0</id>
+        <title>Text 0</title>
+    </data>
+    <data type="multichoice_map" immediate="true">
+        <id>schvalovania_map</id>
+        <title>Multi</title>
+    </data>
+    <data type="number" immediate="true">
+        <id>number_0</id>
+        <title>Number</title>
+    </data>
+
+    <data type="text" immediate="true">
+        <id>text_1</id>
+        <title>Text 1</title>
+    </data>
+    <transition>
+        <id>t1</id>
+        <x>380</x>
+        <y>140</y>
+        <label>Cache management</label>
+        <assignPolicy>auto</assignPolicy>
+        <roleRef>
+            <id>admin</id>
+            <logic>
+                <view>true</view>
+                <cancel>true</cancel>
+                <perform>true</perform>
+            </logic>
+        </roleRef>
+        <dataGroup>
+            <id>t1_0</id>
+            <cols>5</cols>
+            <layout>grid</layout>
+            <dataRef>
+                <id>button_0</id>
+                <logic>
+                    <behavior>editable</behavior>
+                    <behavior>immediate</behavior>
+                </logic>
+                <layout>
+                    <x>0</x>
+                    <y>0</y>
+                    <rows>1</rows>
+                    <cols>2</cols>
+                    <template>material</template>
+                    <appearance>outline</appearance>
+                </layout>
+            </dataRef>
+        </dataGroup>
+
+        <event type="finish">
+            <id>t1_finish</id>
+        </event>
+        <event type="cancel">
+            <id>t1_cancel</id>
+        </event>
+        <event type="delegate">
+            <id>t1_delegate</id>
+        </event>
+    </transition>
+
+</document>

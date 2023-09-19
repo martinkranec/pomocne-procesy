@@ -1,0 +1,318 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>set_active_places</id>
+	<initials>LFD</initials>
+	<title>Set Active Places</title>
+	<icon>device_hub</icon>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="text">
+		<id>text_0</id>
+		<title>Case ID</title>
+	</data>
+	<data type="text">
+		<id>result</id>
+		<title>Result</title>
+	</data>
+	<data type="text">
+		<id>active_place_number</id>
+		<title>Active places number</title>
+	</data>
+	<data type="text">
+		<id>active_place_id</id>
+		<title>Active Place ID</title>
+	</data>
+	<data type="number">
+		<id>tokens</id>
+		<title>Tokens</title>
+	</data>
+	<data type="button">
+		<id>load_active_places</id>
+		<title/>
+		<placeholder>Load active places</placeholder>
+	</data>
+	<data type="button">
+		<id>add_active_place</id>
+		<title/>
+		<placeholder>Add active Places</placeholder>
+		<event type="set">
+			<id>set_event_0</id>
+			<actions phase="post">
+				<action id="action_0">text_0: f.text_0,
+            result: f.result,
+            active_places: f.active_place_number;
+
+            if (!text_0.value)
+                return
+
+            def caze = findCase(text_0.value)
+            caze = workflowService.save(caze)
+            change result value { caze.activePlaces.toString() }</action>
+			</actions>
+		</event>
+	</data>
+	<data type="button">
+		<id>remove_active_place</id>
+		<title/>
+		<placeholder>Remove active place</placeholder>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>380</x>
+		<y>140</y>
+		<label>Set active places</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<view>true</view>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>3</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>text_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>active_place_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>tokens</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>load_active_places</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<event type="set">
+					<id>load_active_places_set</id>
+					<actions phase="pre">
+						<action id="1">text_0: f.text_0,
+result: f.result;
+
+if (!text_0.value)
+    return
+
+def caze = findCase(text_0.value)
+change result value { caze.activePlaces.toString() }</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>add_active_place</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<event type="set">
+					<id>add_active_place_set</id>
+					<actions phase="pre">
+						<action id="2">stringId: f.text_0,
+active_place_id: f.active_place_id,
+tokens: f.tokens,
+result: f.result;
+
+if (!stringId.value)
+    return
+
+def caze = findCase(stringId.value)
+caze.activePlaces.put(active_place_id.value.toString(),tokens.value.toInteger())
+caze = workflowService.save(caze)
+change result value { caze.activePlaces.toString() }</action>
+					</actions>
+				</event>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+	<transition>
+		<id>t2</id>
+		<x>380</x>
+		<y>220</y>
+		<label>Remove active places</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t2_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>text_0</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>active_place_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>remove_active_place</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+				<event type="set">
+					<id>remove_active_place_set</id>
+					<actions phase="pre">
+						<action id="3">stringId: f.text_0,
+active_place_id: f.active_place_id,
+result: f.result;
+
+if (!stringId.value)
+    return
+
+def caze = findCase(stringId.value)
+caze.activePlaces.remove(active_place_id.value.toString())
+caze = workflowService.save(caze)
+change result value { caze.activePlaces.toString() }</action>
+					</actions>
+				</event>
+			</dataRef>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t2_assign</id>
+		</event>
+		<event type="finish">
+			<id>t2_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t2_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t2_delegate</id>
+		</event>
+	</transition>
+</document>
