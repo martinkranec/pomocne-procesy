@@ -1,0 +1,157 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>migrate_user_refs</id>
+	<initials>MDU</initials>
+	<title>migrate_user_refs</title>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<function scope="process" name="migrateUserField">
+		{ caseIds, userIdOld, userIdNew, userFieldId ->
+			try {
+				def user = userService.findById(userIdNew, false)
+				def cases = workflowService.findAllById(caseIds as List)
+				cases.each { useCase ->
+					try {
+						def value = useCase.getFieldValue(userFieldId)
+						if (!value) {
+							return false
+						}
+						def existing = value.userValues.find { it.id == userIdOld }
+						if (existing) {
+							log.info("Updating value $userFieldId $userIdOld to $userIdNew in $useCase.stringId $useCase.title" as String)
+							value.userValues.remove(existing)
+							value.userValues.add(new com.netgrif.application.engine.petrinet.domain.dataset.UserFieldValue(user))
+							workflowService.save(useCase)
+							workflowService.resolveUserRef(useCase)
+						}
+						return true
+					} catch (Exception e) {
+						log.error("Failed for $useCase.stringId", e)
+						return false
+					}
+				}
+			} catch (Exception e) {
+				log.error("Failed for $userIdNew", e)
+				return false
+			}
+		}
+	</function>
+	<data type="button">
+		<id>replace</id>
+		<title/>
+		<placeholder>Replace</placeholder>
+		<event type="set">
+			<id>set_event_0</id>
+			<actions phase="post">
+				<action>
+					cases: f.cases;
+
+					def fullResult = ""
+					def result = migrateUserField([
+							"646f588e247f4c1204778fc0",
+							"646f5b33247f4c12048f9227",
+							"646ccdef247f4c120422fc39",
+							"646de072247f4c1204eddc75",
+					], "640f8832847c0e40ae528722", "640b8529847c0e40ae908b39", "zz_list")
+					fullResult += result + "\n"
+
+					result = migrateUserField([
+							"64706d5a247f4c1204331b2f"
+					], "640f8832847c0e40ae528722", "640b8529847c0e40ae908b39", "zz_list")
+					fullResult += result + "\n"
+
+					result = migrateUserField([
+							"64706d5a247f4c1204331b2f"
+					], "640f8832847c0e40ae528722", "640b8529847c0e40ae908b39", "approvers_list")
+					fullResult += result + "\n"
+
+					result = migrateUserField([
+							"6465d279c8aff67312a2cd7c"
+					], "640f8832847c0e40ae528722", "640b8529847c0e40ae908b39", "sledovatelia")
+					fullResult += result + "\n"
+
+					change cases value { fullResult }
+				</action>
+			</actions>
+		</event>
+	</data>
+	<data type="text">
+		<id>cases</id>
+		<title>Cases</title>
+		<component>
+			<name>area</name>
+		</component>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>540</x>
+		<y>180</y>
+		<label>Fix</label>
+		<assignPolicy>auto</assignPolicy>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<view>true</view>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+
+			<dataRef>
+				<id>replace</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>cases</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+</document>
