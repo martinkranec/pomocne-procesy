@@ -1,0 +1,83 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>set_status_fpu_doz</id>
+	<initials>SGU</initials>
+	<title>set_status_fpu_doz</title>
+	<icon>device_hub</icon>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<caseName>set_status_fpu_doz</caseName>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<transition>
+		<id>t1</id>
+		<x>700</x>
+		<y>260</y>
+		<label>Set userlist</label>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+
+			<actions phase="pre">
+				<action>
+					def migrationHelper = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("migrationHelper")
+
+					def query = "processIdentifier:\"FPU_a_OCR/fpu_faktura\" AND dataSet.status.keyValue.keyword:\"accounted\" AND NOT dataSet.status.keyValue.keyword:\"processing_error\" AND dataSet.nemocnica_zz.fulltextValue.keyword:N019"
+					def cases = findCasesElastic(query)
+					log.info("Updating ${cases.size()} DOZ cases")
+					cases.each { useCase ->
+						def field = useCase.dataSet["status"]
+						log.info("$useCase.stringId = $field.value")
+						field.value = "approved"
+						workflowService.save(useCase)
+						migrationHelper.elasticIndex(useCase)
+					}
+				</action>
+			</actions>
+			<title>Run migration</title>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+	<place>
+		<id>p1</id>
+		<x>540</x>
+		<y>260</y>
+		<tokens>1</tokens>
+		<static>false</static>
+	</place>
+	<arc>
+		<id>a1</id>
+		<type>regular</type>
+		<sourceId>p1</sourceId>
+		<destinationId>t1</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+</document>

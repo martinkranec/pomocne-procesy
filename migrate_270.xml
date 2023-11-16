@@ -1,0 +1,110 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>migrate_270</id>
+	<initials>270</initials>
+	<title>migrate_270</title>
+	<icon>device_hub</icon>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<caseName>migrate_270</caseName>
+	<processEvents>
+		<event type="upload">
+			<id>upload</id>
+			<actions phase="post">
+				<action>
+					createCase("migrate_270")
+				</action>
+			</actions>
+		</event>
+	</processEvents>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="button">
+		<id>run_all</id>
+		<title>Run for all</title>
+		<event type="set">
+			<id>set_run_all</id>
+			<actions phase="post">
+				<action>
+					def migrationHelper = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("migrationHelper")
+
+					migrationHelper.updateCasesCursor({ useCase -&gt;
+						def status = useCase.dataSet["status"].value as String
+						if (status == "being_filled" || status == "processing_error" || status == "processing" || status == "processed" || status == "formal") {
+							migrationHelper.setPetriNet(useCase)
+							taskService.reloadTasks(useCase)
+						}
+					}, "FPU_a_OCR/fpu_faktura")
+				</action>
+			</actions>
+		</event>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>700</x>
+		<y>260</y>
+		<label>Migration 2.7.0</label>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>run_all</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+			<title></title>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+	<place>
+		<id>p1</id>
+		<x>540</x>
+		<y>260</y>
+		<tokens>1</tokens>
+		<static>false</static>
+	</place>
+	<arc>
+		<id>a1</id>
+		<type>regular</type>
+		<sourceId>p1</sourceId>
+		<destinationId>t1</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+</document>

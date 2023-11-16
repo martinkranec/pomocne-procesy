@@ -1,0 +1,155 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>find_broken_fpu</id>
+	<initials>FBF</initials>
+	<title>find_broken_fpu</title>
+	<icon>device_hub</icon>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<caseName>find broken fpu</caseName>
+	<processEvents>
+		<event type="upload">
+			<id>upload</id>
+			<actions phase="post">
+				<action>
+					createCase("find_broken_fpu")
+				</action>
+			</actions>
+		</event>
+	</processEvents>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="button">
+		<id>run_all</id>
+		<title>Run for all</title>
+		<event type="set">
+			<id>set_run_all</id>
+			<actions phase="post">
+				<action>
+					result: f.result;
+
+					def filterFpuFakturaNaSpracovanie = getFilterFromMenuItem(findMenuItem("fpu_faktura_na_spracovanie")).dataSet["filter"].value as String
+					def filterFpuFakturaZadaneMailom = getFilterFromMenuItem(findMenuItem("fpu_faktura_zadane_mailom")).dataSet["filter"].value as String
+					def filterFpuFakturaZadaneRucne = getFilterFromMenuItem(findMenuItem("fpu_faktura_zadane_rucne")).dataSet["filter"].value as String
+					def filterFpuFakturaMedzistav = getFilterFromMenuItem(findMenuItem("fpu_faktura_medzistav")).dataSet["filter"].value as String
+
+					def casesFpuFakturaNaSpracovanie = findCasesElastic("($filterFpuFakturaNaSpracovanie) AND (dataSet.status.keyValue.keyword:\"approved\")" as String)
+					def casesFpuFakturaZadaneMailom = findCasesElastic("($filterFpuFakturaZadaneMailom) AND (dataSet.status.keyValue.keyword:\"approved\")" as String)
+					def casesFpuFakturaZadaneRucne = findCasesElastic("($filterFpuFakturaZadaneRucne) AND (dataSet.status.keyValue.keyword:\"approved\")" as String)
+					def casesFpuFakturaMedzistav = findCasesElastic(filterFpuFakturaMedzistav)
+
+					def groupResults = [:]
+					def casesGroups = ["fpu_faktura_na_spracovanie": casesFpuFakturaNaSpracovanie, "fpu_faktura_zadane_mailom": casesFpuFakturaZadaneMailom, "fpu_faktura_zadane_rucne": casesFpuFakturaZadaneRucne, "fpu_faktura_medzistav": casesFpuFakturaMedzistav]
+					casesGroups.each { group ->
+						def mapByActivePlaces = [:]
+						(group.value as java.util.ArrayList).sort { it.creationDate }.each { caze ->
+							def activePlacesStr = caze.activePlaces.keySet().sort().collect { "&lt;strong>$it&lt;/strong>:${caze.activePlaces[it]}" as String }.join(", ")
+
+							if (mapByActivePlaces.containsKey(activePlacesStr)) {
+								mapByActivePlaces[activePlacesStr].add(caze)
+							} else {
+								mapByActivePlaces[activePlacesStr] = [caze]
+							}
+						}
+						groupResults.put(group.key, mapByActivePlaces.collect { entry ->
+							"[$entry.key]: &lt;br>" + entry.value.collect { it.stringId + ": " + it.title + " " + it.creationDate.format("dd.MM.yyyy") + " " + it.dataSet["status"].value }.join("&lt;br>")
+						}.join("&lt;br>&lt;br>"))
+					}
+
+					change result value {
+						return groupResults.collect { "$it.key: &lt;br> $it.value" as String}.join("&lt;br>&lt;br>")
+					}
+				</action>
+			</actions>
+		</event>
+	</data>
+	<data type="text">
+		<id>result</id>
+		<title>Result</title>
+		<component>
+			<name>htmltextarea</name>
+		</component>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>700</x>
+		<y>260</y>
+		<label>Migration 2.7.0</label>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>run_all</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>result</id>
+				<logic>
+					<behavior>visible</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>4</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+			<title></title>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+	<place>
+		<id>p1</id>
+		<x>540</x>
+		<y>260</y>
+		<tokens>1</tokens>
+		<static>false</static>
+	</place>
+	<arc>
+		<id>a1</id>
+		<type>regular</type>
+		<sourceId>p1</sourceId>
+		<destinationId>t1</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+</document>

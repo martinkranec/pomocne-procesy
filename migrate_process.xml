@@ -17,23 +17,50 @@
 		<event type="set">
 			<id>migrate_set</id>
 			<actions phase="pre">
-				<action id="1">
-					identifier: f.identifier,
-					newNet: f.newNet;
+				<action id="1">identifier: f.identifier,
+                    newNet: f.newNet;
 
-					def migrationHelper = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("migrationHelper")
-					def importer = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("importer")
-					petriNetService.evictAllCaches()
+                    def migrationHelper = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("migrationHelper")
+                    def importer = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("importer")
+                    petriNetService.evictAllCaches()
 
-					def currentNet = petriNetService.getNewestVersionByIdentifier(identifier.value as String)
-					def reimported = importer.importPetriNet(new java.io.File(newNet.value.path)).get()
+                    def currentNet = petriNetService.getNewestVersionByIdentifier(identifier.value as String)
+                    def reimported = importer.importPetriNet(new java.io.File(newNet.value.path)).get()
 
-					migrationHelper.updateNetIgnoreRoles(currentNet, reimported, new java.io.File(newNet.value.path), null)
+                    assert (reimported.identifier == currentNet.identifier)
 
-					petriNetService.evictAllCaches()
-					def actionCacheService = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("fieldActionsCacheService")
-					actionCacheService.clearActionCache()
-				</action>
+                    migrationHelper.updateNetIgnoreRoles(currentNet, reimported, new java.io.File(newNet.value.path), null)
+
+                    petriNetService.evictAllCaches()
+                    def actionCacheService = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("fieldActionsCacheService")
+                    actionCacheService.clearActionCache()</action>
+			</actions>
+		</event>
+	</data>
+	<data type="button">
+		<id>migrate_all</id>
+		<title/>
+		<placeholder>Migrate all versions</placeholder>
+		<event type="set">
+			<id>migrate_set</id>
+			<actions phase="pre">
+				<action id="2">identifier: f.identifier,
+                    newNet: f.newNet;
+
+                    def migrationHelper = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("migrationHelper")
+                    def importer = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("importer")
+                    petriNetService.evictAllCaches()
+
+                    def reimported = importer.importPetriNet(new java.io.File(newNet.value.path)).get()
+
+                    def allFpuNets = petriNetService.getByIdentifier(identifier.value)
+                    allFpuNets.each { currentNet -&gt;
+                        assert (reimported.identifier == currentNet.identifier)
+                        migrationHelper.updateNetIgnoreRoles(currentNet, reimported, new java.io.File(newNet.value.path), null)
+                    }
+                    petriNetService.evictAllCaches()
+                    def actionCacheService = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("fieldActionsCacheService")
+                    actionCacheService.clearActionCache()</action>
 			</actions>
 		</event>
 	</data>
@@ -103,7 +130,21 @@
 					<x>0</x>
 					<y>2</y>
 					<rows>1</rows>
-					<cols>4</cols>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>migrate_all</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>2</y>
+					<rows>1</rows>
+					<cols>2</cols>
 					<template>material</template>
 					<appearance>outline</appearance>
 				</layout>

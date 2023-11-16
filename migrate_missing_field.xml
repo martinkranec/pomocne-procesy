@@ -1,0 +1,158 @@
+<document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://petriflow.com/petriflow.schema.xsd">
+	<id>migrate_missing_field</id>
+	<initials>MMF</initials>
+	<title>migrate missing field</title>
+	<icon>device_hub</icon>
+	<defaultRole>false</defaultRole>
+	<anonymousRole>false</anonymousRole>
+	<transitionRole>false</transitionRole>
+	<caseName>migrate_missing_field</caseName>
+	<roleRef>
+		<id>admin</id>
+		<caseLogic>
+			<create>true</create>
+			<delete>true</delete>
+		</caseLogic>
+	</roleRef>
+	<role>
+		<id>admin</id>
+		<title>Admin</title>
+	</role>
+	<data type="text">
+		<id>identifier</id>
+		<title>Identifier</title>
+	</data>
+	<data type="text">
+		<id>process_id</id>
+		<title>Process ID (not required)</title>
+	</data>
+	<data type="text">
+		<id>field_id</id>
+		<title>Field id</title>
+	</data>
+	<data type="boolean">
+		<id>immediate</id>
+		<title>immediate</title>
+		<init>false</init>
+	</data>
+	<transition>
+		<id>t1</id>
+		<x>700</x>
+		<y>260</y>
+		<label>Run fix</label>
+		<roleRef>
+			<id>admin</id>
+			<logic>
+				<cancel>true</cancel>
+				<perform>true</perform>
+			</logic>
+		</roleRef>
+		<dataGroup>
+			<id>t1_0</id>
+			<cols>4</cols>
+			<layout>grid</layout>
+			<dataRef>
+				<id>identifier</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>process_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>0</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>field_id</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>0</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+			<dataRef>
+				<id>immediate</id>
+				<logic>
+					<behavior>editable</behavior>
+				</logic>
+				<layout>
+					<x>2</x>
+					<y>1</y>
+					<rows>1</rows>
+					<cols>2</cols>
+					<template>material</template>
+					<appearance>outline</appearance>
+				</layout>
+			</dataRef>
+		</dataGroup>
+		<event type="assign">
+			<id>t1_assign</id>
+		</event>
+		<event type="finish">
+			<id>t1_finish</id>
+			<title>Run migration</title>
+			<actions phase="pre">
+				<action id="action_0">identifier: f.identifier,
+                    process_id: f.process_id,
+                    immediate: f.immediate,
+                    field_id: f.field_id;
+
+                    if (!identifier.value || !field_id.value) {
+                        throw new IllegalArgumentException("No identifier or field_id")
+                    }
+
+                    def migrationHelper = com.netgrif.application.engine.configuration.ApplicationContextProvider.getBean("migrationHelper")
+
+                    migrationHelper.updateCasesCursor({ useCase -&gt;
+                        useCase.dataSet.put(field_id.value, new com.netgrif.application.engine.workflow.domain.DataField())
+                        if (immediate.value) {
+                            useCase.immediateDataFields.add(field_id.value)
+                        }
+                    }, identifier.value, process_id.value ? new org.bson.types.ObjectId(process_id.value) : null)</action>
+			</actions>
+		</event>
+		<event type="cancel">
+			<id>t1_cancel</id>
+		</event>
+		<event type="delegate">
+			<id>t1_delegate</id>
+		</event>
+	</transition>
+	<place>
+		<id>p1</id>
+		<x>540</x>
+		<y>260</y>
+		<tokens>1</tokens>
+		<static>false</static>
+	</place>
+	<arc>
+		<id>a1</id>
+		<type>regular</type>
+		<sourceId>p1</sourceId>
+		<destinationId>t1</destinationId>
+		<multiplicity>1</multiplicity>
+	</arc>
+</document>
